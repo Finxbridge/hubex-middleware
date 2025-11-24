@@ -5,7 +5,8 @@
       "Bash(npm run build:*)",
       "Bash(npm install)",
       "Bash(npm run migration:generate:*)",
-      "Bash(npm run migration:run:*)"
+      "Bash(npm run migration:run:*)",
+      "Bash(del ARCHITECTURE.md COMPLETION_CHECKLIST.md FINAL_STATUS.md FIXES_APPLIED.md FRONTEND_COMPLETION.md IMPLEMENTATION_GUIDE.md PROJECT_SUMMARY.md START_HERE.md)"
     ],
     "deny": [],
     "ask": []
