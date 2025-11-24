@@ -1,0 +1,60 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: hubex-redis
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: hubex-backend
+    environment:
+      NODE_ENV: development
+      DATABASE_HOST: dpg-d4f0n8qdbo4c73dpvmt0-a.oregon-postgres.render.com
+      DATABASE_PORT: 5432
+      DATABASE_USER: hubex_user
+      DATABASE_PASSWORD: NpoBZ0Af3JadtiQVn1zKETbiksueqoL9
+      DATABASE_NAME: hubex
+      DATABASE_SSL: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: your-jwt-secret-change-in-production
+      ENCRYPTION_KEY: your-encryption-key-32-chars-min
+      PORT: 3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/package.json:/app/package.json
+    command: npm run start:dev
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: hubex-frontend
+    environment:
+      VITE_API_URL: http://localhost:3000
+    ports:
+      - '5173:5173'
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/package.json:/app/package.json
+    command: npm run dev
+
+volumes:
+  redis_data:
